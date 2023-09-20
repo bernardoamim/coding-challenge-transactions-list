@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { Actions, FormData, SendTransactionSagaPayload  } from '../types';
-import { WalletIDPattern } from '../utils/constants';
+import { WalletIDPattern } from '../utils/patterns';
 
 interface ISendTransactionProps {
   senderAddress: string;
