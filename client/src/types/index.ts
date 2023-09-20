@@ -1,3 +1,14 @@
+export interface FormData {
+  sender: string;
+  recipient: string;
+  amount: number;
+}
+
+export interface SendTransactionSagaPayload {
+  recipient: string;
+  amount: number;
+}
+
 export interface Transaction {
   gasLimit: string;
   gasPrice: string;

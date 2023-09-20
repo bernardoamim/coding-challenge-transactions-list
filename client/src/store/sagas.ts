@@ -1,13 +1,15 @@
 import { takeEvery } from 'redux-saga/effects';
-import { JsonRpcProvider, Transaction, TransactionResponse, TransactionReceipt, BrowserProvider, Signer } from 'ethers';
+import { Transaction, TransactionResponse, TransactionReceipt, BrowserProvider, Signer } from 'ethers';
 
 import apolloClient from '../apollo/client';
-import { Actions } from '../types';
+import { Actions, SendTransactionSagaPayload } from '../types';
 import { SaveTransaction } from '../queries';
 import { navigate } from '../components/NaiveRouter';
+import { PayloadAction } from "@reduxjs/toolkit";
 
-function* sendTransaction() {
-  const provider = new JsonRpcProvider('http://localhost:8545');
+
+function* sendTransaction({ payload }: PayloadAction<SendTransactionSagaPayload>) {
+  // const provider = new JsonRpcProvider('http://localhost:8545');
 
   // this could have been passed along in a more elegant fashion,
   // but for the purpouses of this scenario it's good enough
@@ -16,18 +18,9 @@ function* sendTransaction() {
 
   const signer: Signer = yield walletProvider.getSigner();
 
-  const accounts: Array<{ address: string }> = yield provider.listAccounts();
-
-  const randomAddress = () => {
-    const min = 1;
-    const max = 19;
-    const random = Math.round(Math.random() * (max - min) + min);
-    return accounts[random].address;
-  };
-
   const transaction = {
-    to: randomAddress(),
-    value: '1000000000000000000',
+    to: payload.recipient,
+    value: payload.amount.toString(),
   };
 
   try {
@@ -53,6 +46,9 @@ function* sendTransaction() {
       mutation: SaveTransaction,
       variables,
     });
+
+    document.getElementById('hs-basic-modal')?.classList.remove('open')
+    document.getElementById('hs-basic-modal')?.classList.add('hidden')
 
     navigate(`/transaction/${receipt.hash}`);
 
